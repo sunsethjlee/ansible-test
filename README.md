@@ -30,6 +30,11 @@
 └── README.md
 ```
 
+## 파일 설명
+- inspect: 취약점 점검 
+
+    - [Testing Strategies](https://docs.ansible.com/ansible/latest/reference_appendices/test_strategies.html)
+
 ## 주의사항
 - 제어 노드는 Linux 나 Unix만 지원 
 
