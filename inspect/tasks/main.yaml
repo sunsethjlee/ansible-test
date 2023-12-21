@@ -1,21 +1,4 @@
 ---
-# - name: 시스템 정보 확인
-#   command: systeminfo
-#   register: system_info
-
-# - name: CPU 사용량 확인
-#   command: top
-#   register: cpu_usage
-
-# - name: 메모리 사용량 확인
-#   command: free -m
-#   register: memory_usage
-
-- name: 디스크 사용량 확인
-  command: df -h
-  register: disk_usage
-
-- ansible.builtin.service:
-    name: foo
-    state: started
-    enabled: true
+- name: pw적합도
+  ansible.builtin.script:
+   cmd: inspect/pwchweck.sh --some-argument 1234
