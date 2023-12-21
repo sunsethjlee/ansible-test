@@ -1,0 +1,5 @@
+---
+- name: change hostname
+    hostname:
+        name: new_name
+        #use:

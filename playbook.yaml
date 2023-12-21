@@ -4,4 +4,5 @@
   connection: local
   roles:
     #- blk
-    - lvm
+    #- lvm
+    - hostname

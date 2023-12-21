@@ -1,37 +1,37 @@
 ---
 
-    - name: create partition
-      parted:
-        device: /dev/xvda
-        number: 1
-        flags: [ lvm ]
-        state: present
-        part_end: 300GiB
+- name: create partition
+  parted:
+    device: /dev/xvda
+    number: 1
+    flags: [ lvm ]
+    state: present
+    part_end: 300GiB
 
-    - name: Create directory (mount path)
-      file:
-        path: /dev/mapper/LV
-        state: directory
-        mode: '0755' #파일권한 rwx
+- name: Create directory (mount path)
+  file:
+    path: /dev/mapper/LV
+    state: directory
+    mode: '0755' #파일권한 rwx
 
-    - name: format the xfs filesystem
-      filesystem:
-        fstype: ext4
-        dev: /dev/xvda1
+- name: format the xfs filesystem
+  filesystem:
+    fstype: ext4
+    dev: /dev/xvda1
 
-    - name: mount the storage on
-      mount:
-        path: /dev/mapper/LV
-        src: /dev/xvda1
-        fstype: ext4
-        state: mounted
+- name: mount the storage on
+  mount:
+    path: /dev/mapper/LV
+    src: /dev/xvda1
+    fstype: ext4
+    state: mounted
 
 
-    - name: Dispaly uuid & store in variable
-      command: blkid -s UUID -o value /dev/xvda1
-      register: uuid_xvda1
+- name: Dispaly uuid & store in variable
+  command: blkid -s UUID -o value /dev/xvda1
+  register: uuid_xvda1
 
-    - lineinfile:
-        path: /etc/fstab
-        regexp: "/dev/xvda1 /dev/mapper/LV xfs defaults 0 0"
-        line: "UUID={{ uuid_xvda1.stdout }} /kofs_app/ xfs defaults 0 0"
+- lineinfile:
+    path: /etc/fstab
+    regexp: "/dev/xvda1 /dev/mapper/LV xfs defaults 0 0"
+    line: "UUID={{ uuid_xvda1.stdout }} /kofs_app/ xfs defaults 0 0"
