@@ -29,11 +29,14 @@
 ├── playbook.yaml
 └── README.md
 ```
+ # 설치 환경
+OS : Ubuntu 16.04
 
-- 대상 hosts: 
-    - lhj-lvm-test000 (ansibe svr) 
-    - lhj-lvm-test002 (node1)
-    - lhj-lvm-test003 (node2)
+대상 hosts: 
+- lhj-lvm-test000 (ansibe svr) 
+- lhj-lvm-test002 (node1) 10.0.200.7
+- lhj-lvm-test003 (node2) 10.0.200.8
+
 
 ## 폴더 설명
 task 별 폴더 생성
@@ -48,10 +51,11 @@ task 별 폴더 생성
     - [Testing Strategies](https://docs.ansible.com/ansible/latest/reference_appendices/test_strategies.html)
 
 
-## docs
+## 참고
+official
 - [모듈 docs](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html)
 
-## 기타 참고 링크
+기타
 - [개발자가 ansible 시작하기](https://wikidocs.net/130112)
 
 

@@ -14,3 +14,8 @@
 - name: 디스크 사용량 확인
   command: df -h
   register: disk_usage
+
+- ansible.builtin.service:
+    name: foo
+    state: started
+    enabled: true
