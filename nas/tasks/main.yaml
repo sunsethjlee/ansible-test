@@ -1,0 +1,44 @@
+---
+
+    - name: install nfs-utils
+      ansible.builtin.command: yum install nfs-utils -y
+      with_items: "{{ nas_mount_list }}"
+      when: " item.hostname  == inventory_hostname"
+
+    - name: start rpc
+      ansible.builtin.command: systemctl start rpcbind.service
+      with_items: "{{ nas_mount_list }}"
+      ignore_errors: true
+      when: " item.hostname  == inventory_hostname"
+
+    - name: enable rpc
+      ansible.builtin.command: systemctl enable rpcbind.service
+      with_items: "{{ nas_mount_list }}"
+      ignore_errors: true
+      #when: " item.hostname  == inventory_hostname"
+
+    - name: Create directory if does not exist
+      file:
+        path: '{{ item.path }}'
+        state: directory
+        mode: '0755'
+        group: '{{ item.group }}'
+        owner: '{{ item.owner }}'
+      with_items: "{{ nas_mount_list }}"
+      #when: " item.hostname  == inventory_hostname"
+
+    - name: mount nas directory
+      mount:
+        path: '{{ item.path }}'
+        src: '{{ item.nas }}'
+        fstype: nfs
+        state: mounted
+        opts: "vers=3"
+      with_items: "{{ nas_mount_list }}"
+      #when: " item.hostname  == inventory_hostname"
+
+#    - name: enable chkconfig netfs on
+#      ansible.builtin.command:  chkconfig netfs on 
+#      become: yes
+#      with_items: "{{ nas_mount_list }}"
+#      when: "'{{ item.hostname }}' == inventory_hostnam

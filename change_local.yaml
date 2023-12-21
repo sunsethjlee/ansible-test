@@ -1,0 +1,8 @@
+---
+- name: change localhost config
+  hosts: localhost
+  become: true
+  tasks:
+    - name: change hostname
+      hostname: 
+       name: ansible_svr

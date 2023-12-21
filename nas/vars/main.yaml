@@ -1,0 +1,4 @@
+
+nas_mount_list:
+  - { hostname: lhj-lvm-test002, path: /kofs_app/data, nas: "169.254.0.20:/n2574402_lhj", group: root, owner: root }
+  - { hostname: lhj-lvm-test003, path: /kofs_app/data, nas: "169.254.0.20:/n2574402_lhj", group: root, owner: root }

@@ -1,0 +1,147 @@
+---
+- name: create partition
+  parted:
+    device: /dev/xvda
+    number: 2
+    flags: [ lvm ]
+    state: present
+
+- name: Install lvm2 dependency #lv생성
+  package:
+    name: lvm2
+    state: present
+
+- name: task for creating volume group #lvm 초기화 
+  lvg:
+      vg: appvg
+      pvs: /dev/xvda2
+      pesize: 16
+
+- name: task for creating logical volume 
+  lvol:
+      vg: appvg
+      lv:  appvg-swlv
+      size: 100g
+      force: yes
+
+- name: task for creating logical volume
+  lvol:
+      vg: appvg
+      lv:  appvg-applv
+      size: 100g
+      force: yes
+
+- name: task for creating logical volume
+  lvol:
+      vg: appvg
+      lv:  appvg-loglv
+      size: 50g
+      force: yes
+
+- name: Create directory data1 if does not exist
+  file:
+    path: /kofs_app/sw
+    state: directory
+    mode: '0755'
+
+- name: Create directory data1 if does not exist
+  file:
+    path: /kofs_app/app
+    state: directory
+    mode: '0755'
+
+- name: Create directory data1 if does not exist
+  file:
+    path: /kofs_app/log
+    state: directory
+    mode: '0755'
+
+- name: format the xfs filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/appvg/appvg-swlv
+
+- name: format the xfs filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/appvg/appvg-applv
+
+- name: format the xfs filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/appvg/appvg-loglv
+
+- name: mount the lv on
+  mount:
+    path: /kofs_app/sw
+    src: /dev/appvg/appvg-swlv
+    fstype: xfs
+    state: mounted
+
+- name: mount the lv on
+  mount:
+    path: /kofs_app/app
+    src: /dev/appvg/appvg-applv
+    fstype: xfs
+    state: mounted
+
+- name: mount the lv on
+  mount:
+    path: /kofs_app/log
+    src: /dev/appvg/appvg-loglv
+    fstype: xfs
+    state: mounted
+
+
+
+
+
+# ---
+#   - name: Create directory if does not exist
+#     file:
+#       path: '{{ item.path }}'
+#       state: directory
+#       mode: '0755'
+#       group: '{{ item.group }}'
+#       owner: '{{ item.owner }}'
+#     with_items: "{{ nas_mount_list }}"
+#     #when: " item.hostname  == inventory_hostname"
+
+#   - name: install nfs-utils
+#     yum:
+#       name: nfs-utils
+#       state: present
+#     # ansible.builtin.command: yum install nfs-utils -y
+#     # with_items: "{{ nas_mount_list }}"
+#     # when: " item.hostname  == inventory_hostname"
+#     # #command_warnings : False
+
+#   - name: start rpc
+#     ansible.builtin.command: systemctl start rpcbind.service
+#     with_items: "{{ nas_mount_list }}"
+#     when: " item.hostname  == inventory_hostname"
+
+#   - name: enable rpc
+#     ansible.builtin.command: systemctl enable rpcbind.service
+#     with_items: "{{ nas_mount_list }}"
+#     when: " item.hostname  == inventory_hostname"
+
+#   - name: Create directory if does not exist
+#     file:
+#       path: '{{ item.path }}'
+#       state: directory
+#       mode: '0755'
+#       group: '{{ item.group }}'
+#       owner: '{{ item.owner }}'
+#     with_items: "{{ nas_mount_list }}"
+#     when: " item.hostname  == inventory_hostname"
+
+#   - name: mount nas directory
+#     mount:
+#       path: '{{ item.path }}'
+#       src: '{{ item.nas }}'
+#       fstype: nfs
+#       state: mounted
+#       opts: "vers=3"
+#     with_items: "{{ nas_mount_list }}"
+#     when: " item.hostname  == inventory_hostname"

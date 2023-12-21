@@ -1,0 +1,7 @@
+#playbook.yaml
+---
+- hosts: all
+  connection: local
+  roles:
+    #- blk
+    - lvm
