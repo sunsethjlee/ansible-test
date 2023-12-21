@@ -3,6 +3,6 @@
 - hosts: all
   connection: local
   roles:
-    #- blk
-    #- lvm
+    - blk
+    - lvm
     - hostname

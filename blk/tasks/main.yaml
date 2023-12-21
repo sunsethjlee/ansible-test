@@ -1,5 +1,4 @@
 ---
-
 - name: create partition
   parted:
     device: /dev/xvda
