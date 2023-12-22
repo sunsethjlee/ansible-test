@@ -1,5 +1,6 @@
 
 # 개요
+## (앤서블 사용법)[]
 ![Alt text](img/image.png)
 
 ## 구조 & 작동 현황
@@ -51,15 +52,5 @@ task 별 폴더 생성
     - [Testing Strategies](https://docs.ansible.com/ansible/latest/reference_appendices/test_strategies.html)
 
 
-## 참고
-official
-- [모듈 docs](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html)
-
-기타
-- [개발자가 ansible 시작하기](https://wikidocs.net/130112)
 
 
-## 주의사항
-- 제어 노드는 Linux 나 Unix만 지원  (리눅스 기반 / window, macOS는 ansible 사용불가)
-- ssh 기반으로 동작하기 때문에 에이전트를 설치할 필요 없이 ssh 접속 정보만을 주면 된다 (/etc/ansible/hosts 에 작성)
-![Alt text](img/image-1.png)
