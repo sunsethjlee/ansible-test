@@ -1,0 +1,98 @@
+![Alt text](img/image-1.png)
+
+
+
+# 사용법
+## 1. ansible설치 (Ubuntu)
+
+```
+apt install ansible
+```
+
+## 2. (선택) SSH 키 설정
+
+앤서블은 ssh로 제어 노드와 매니지드 노드가 연결된다. 작업을 진행하기 전에 authorized_keys에 키를 추가하여 주는 것이 좋다.
+```python
+ ssh-keygen -t rsa #키 생성
+ ssh-copy-id root@ip #노드서버에 키 복사
+ ssh root@ip #ssh 연결
+```
+
+## 3. Inventory 설정
+모듈을 연결할 서버 정보를 가지고 있는 인벤토리를 우선 설정해야 한다.
+```python
+# vi /etc/ansible/hosts
+[all:vars]
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+
+[server]
+lhj-lvm-test002 ansible_host={ip} ansible_ssh_user=root
+lhj-lvm-test003 ansible_host={ip} ansible_ssh_user=root
+```
+- ```StrictHostKeyChecking=no``` : ( 2.SSH 키 설정 - 하지 않은 경우 ) ssh를 이용해 원격에 있는 서버에 접근할 때 **로컬에 저장된 키가 서버의 키와 다르더라도 접속을 진행함**
+
+연결되었는지 test
+```python
+ansible server -m ping
+```
+
+## 4. Playbook 설정
+ansible 실행에 필요한 Script를 정의한다. 기본적으로 하나의 playbook은 여러개의 task (**ansible 명령의 실행 단위)** 를 가진다.
+```yaml
+#playbook.yaml
+---
+- name: 이름
+  hosts: 호스트들
+  tasks:
+  - name: 작업 1
+    모듈:
+      명령어: 명령
+  - name: 작업 2
+    모듈:
+      명령어: 명령
+```
+-> 현재playbook.yaml파일은 ```roles:``` 를 이용
+```yaml
+#playbook.yaml
+---
+- hosts: all
+  connection: local
+  roles:
+    - 작업1
+    - 작업2
+    - ...
+    - lvm
+```
+```
+├── lvm 
+│   ├── tasks
+│   │   └── main.yaml
+│   └── vars
+│       └── main.yaml
+├── playbook.yaml
+```
+- roles모듈: 태스크(Task)를 묶어서 롤(Role)로 만들어 놓고 반복사용하는 형태로 구성할 수 있음.
+roles 폴더 내부에 구성요소들(tasks, vars) 있으면 자동으로 main.yaml읽어서 사용할 수 있다.
+
+## 5. Playbook 실행
+Inventory, Playbook 구성이 완료되었으면 Ansible을 실행할 차례
+```
+ansible-playbook playbook.yaml
+```
+
+## 6. 자주 쓰는 명령어
+관리하는 노드 전체에 같은 명령어: ```ansible all -m shell -a "df -h" -k```
+
+
+
+# 주의사항
+- 제어 노드는 Linux 나 Unix만 지원  (리눅스 기반 / window, macOS는 ansible 사용불가)
+- ssh 기반으로 동작하기 때문에 에이전트를 설치할 필요 없이 ssh 접속 정보만을 주면 된다 (/etc/ansible/hosts 에 작성)
+
+# 참고
+official
+- [모듈 docs](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html)
+
+기타
+- [개발자가 ansible 시작하기](https://wikidocs.net/130112)
+
