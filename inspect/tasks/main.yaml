@@ -1,4 +1,88 @@
 ---
-- name: pw적합도
-  ansible.builtin.script:
-   cmd: inspect/pwchweck.sh --some-argument 1234
+# - name: " pw적합도 test"
+#   # ansible.builtin.script:
+#   # cmd: inspect/pwchweck.sh --some-argument 1234
+#   script: inspect/pwchweck.sh --some-argument 1234
+
+- name : "get hostname" # Ansible Client의 hostanme 확인
+  shell : echo $HOSTNAME
+  register : hostname
+
+- name : print hostname # hostname 출력
+  debug:
+  var: hostname.stdout 
+
+- name : make directory # Client에서 /etc/ansible/test 폴더 생성
+  file :
+  path: /etc/ansible/test
+  state: directory
+
+- name : file copy to client server # Server에 있는 test.sh를 Client로 이동
+  copy:
+  src: /etc/ansible/playbook/test.sh
+  dest: /etc/ansible/test
+
+- name: script file exists # test.sh 파일 존재 유무 확인
+  stat:
+    path: /etc/ansible/test/test.sh
+  register: script_result
+
+- name : file permission change # test.sh 파일 실행 권한 추가
+  file:
+    path : "/etc/ansible/test/test.sh"
+    mode : 0700
+
+- name : script exec # 위 작업으로 복사한 test.sh 실행
+  command: sh /etc/ansible/test/test.sh
+  when: script_result.stat.exists # test.sh 파일이 존재하면
+
+- name : no script file # test.sh 파일이 없는 경우, debug meg 출력
+  debug :
+    msg : "There is no script file"
+  when : not script_result.stat.exists
+
+- name: script exec result exists # client 특정 파일 존재 여부 확인
+  stat:
+    path: /root/{{hostname.stdout}}.txt
+  register: stat_result
+
+- name : file move to ansible server # client 특정 파일을 server로 전송
+  fetch:
+    src: /root/{{hostname.stdout}}.txt
+    dest: /etc/ansible/playbook/result/{{ansible_hostname}}/test
+    flat: yes
+  when: stat_result.stat.exists # client 특정 파일이 존재하면
+
+- name : no reporting file # 특정 파일이 없는 경우, debug msg 출력
+  debug :
+    msg : "There is no script reulst file"
+  when : not stat_result.stat.exists
+
+- name : delete script file # script 파일 삭제
+  file :
+    path : /etc/ansible/test/{{item}}
+    state : absent
+  with_items :
+  - test.sh
+
+- name : delete script result file # 특정 파일 삭제 
+  file :
+    path : /root/{{item}}
+    state : absent
+  with_items :
+  - "{{hostname.stdout}}.txt"
+
+- name : deelete ansible directory # 임시 생성한 directory 삭제
+  file :
+    path : /etc/ansible
+    state : absent
+
+- name: init is_sciprt inspection # 초기화 여부 확인
+  stat:
+    path: /etc/ansible
+  register: init_result
+
+- name : init ansible debug # andible init debug msg 출력
+  debug :
+    msg : "success init script inspection"
+  when : not init_result.stat.exists # /etc/ansible 경로가 존재하지 않으면

@@ -83,24 +83,25 @@ apt install ansible
 앤서블은 ssh로 제어 노드와 매니지드 노드가 연결된다. 작업을 진행하기 전에 authorized_keys에 키를 추가하여 주는 것이 좋다.
 ```python
  ssh-keygen -t rsa #키 생성
- ssh-copy-id root@ip #노드서버에 키 복사
+ ssh-copy-id root@ip #노드서버에 키 복사 
  ssh root@ip #ssh 연결
 ```
 
 ## 3) Inventory 설정
-모듈을 연결할 서버 정보를 가지고 있는 인벤토리를 우선 설정해야 한다.
+Ansible이 관리하는 서버의 정보를 담은 파일을 Inventory 파일이라고 하며 파일 위치는 /etc/ansible/hosts 
+파일에 Remote Host IP 등록
 ```python
 # vi /etc/ansible/hosts
 [all:vars]
 ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
 
 [server]
-lhj-lvm-test002 ansible_host={ip} ansible_ssh_user=root
-lhj-lvm-test003 ansible_host={ip} ansible_ssh_user=root
+lhj-lvm-test002 ansible_host=10.0.200.7 ansible_ssh_user=root
+lhj-lvm-test003 ansible_host=10.0.200.8 ansible_ssh_user=root
 ```
 - ```StrictHostKeyChecking=no``` : ( 2.SSH 키 설정 - 하지 않은 경우 ) ssh를 이용해 원격에 있는 서버에 접근할 때 **로컬에 저장된 키가 서버의 키와 다르더라도 접속을 진행함**
 
-연결되었는지 test
+관리노드와 연결 확인을 위한 Ping 테스트
 ```python
 ansible server -m ping
 ```
